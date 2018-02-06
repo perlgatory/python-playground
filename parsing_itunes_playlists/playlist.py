@@ -49,8 +49,10 @@ def plot_stats(filename):
     plist = load_plist(filename)
     tracks = plist['Tracks']
 
-    ratings = [x['Album Rating'] for x in tracks.values()]
-    durations = [x['Total Time'] for x in tracks.values()]
+    sufficiently_informed_tracks = [x for x in tracks.values() if ('Album Rating' in x) and ('Total Time' in x)]
+
+    ratings = [x['Album Rating'] for x in sufficiently_informed_tracks]
+    durations = [x['Total Time'] for x in sufficiently_informed_tracks]
 
     if not ratings or not durations:
         print("Sorry, no data in {}".format(filename))
