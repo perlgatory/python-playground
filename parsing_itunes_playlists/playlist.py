@@ -2,6 +2,7 @@ import plistlib
 from collections import Counter
 import numpy as np
 from matplotlib import pyplot
+import argparse
 
 
 def load_plist(filename):
@@ -74,6 +75,38 @@ def plot_stats(filename):
     pyplot.ylabel('Count')
 
     pyplot.show()
+
+def main():
+    #create parser
+    desc_str = """
+    This program analyzes playlist files (.xml) exported from iTunes."""
+
+    #parse args
+    parser =  argparse.ArgumentParser(description=desc_str)
+    #add a mutually exclusive group of arguments
+    group = parser.add_mutually_exclusive_group()
+
+    #add expected arguments
+    group.add_argument('--common', nargs='*', dest='plFiles', help='Find common tracks between files',  required=False)
+    group.add_argument('--stats', dest='plFile', required=False)
+    group.add_argument('--dup', dest='plFileD', required=False)
+
+    #parse args
+    args = parser.parse_args()
+
+    if args.plFiles:
+        #find common tracks
+        for line in find_common_tracks(args.plFiles):
+            print(line)
+    elif args.plFile:
+        #plot stats
+        plot_stats(args.plFile)
+    elif args.plFileD:
+        #find duplicate tracks
+        for line in find_duplicates(args.plFileD):
+            print(line)
+    else:
+        print("These are not the tracks you are looking for.")
 
 
 if __name__ == '__main__':
