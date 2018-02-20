@@ -110,6 +110,4 @@ def main():
 
 
 if __name__ == '__main__':
-    plot_stats('test-data/mymusic.xml')
-#    print(find_duplicates('test-data/mymusic.xml'))
-#    print(find_common_tracks(['test-data/pl1.xml', 'test-data/pl2.xml']))
+    main()
