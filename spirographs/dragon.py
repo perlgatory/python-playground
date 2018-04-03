@@ -4,7 +4,8 @@ import math
 class Spiro:
     def __init__(self, x_coordinate, y_coordinate, pen_color, large_radius, small_radius, offset_ratio, step_size, fill_color = ""):
         self.turtle = turtle.Turtle()
-        self.turtle.shape('turtle')
+        turtle.register_shape('Spyro.gif')
+        self.turtle.shape('Spyro.gif')
         self.turtle.color(pen_color, fill_color)
 
         self.x_coordinate = x_coordinate  # this is xc
