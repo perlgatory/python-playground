@@ -1,5 +1,6 @@
 import turtle
 import math
+import random
 
 class Spiro:
     def __init__(self, x_coordinate, y_coordinate, pen_color, large_radius, small_radius, offset_ratio, step_size, fill_color = ""):
@@ -63,3 +64,58 @@ class Spiro:
             self.drawing_complete = True
             self.turtle.hideturtle()
 
+class SpiroAnimator:
+    # constructor
+    def __init__(self, N):
+        # set the timer value in milliseconds
+        self.deltaT = 10
+        # get the window dimensions
+        self.width = turtle.window_width()
+        self.height = turtle.window_height()
+        # create the Spiro objects
+        self.spiros = []
+        for i in range(N):
+            # generate random parameters
+            rparams = self.generate_random_params()
+            # set the spiro parameters
+            spiro = Spiro(*rparams)
+            self.spiros.append(spiro)
+            # call timer
+            turtle.ontimer(self.update, self.deltaT)
+
+    # generate random parameters
+    def generate_random_params(self):
+        width, height = self.width, self.height
+        large_radius = random.randint(50, min(width, height)//2)  # Large radius
+        small_radius = random.randint(10, 9*large_radius//10)  # small radius
+        offset_ratio = random.uniform(0.1, 0.9)  # offset ratio
+        x_coordinate = random.randint(-width//2, width//2)  # x coordinate
+        y_coordinate = random.randint(-height//2, height//2)  # y coordinate
+        step_size = random.randint(5, 20)
+        pen_color = (random.random(),
+               random.random(),
+               random.random())
+        return (x_coordinate, y_coordinate, pen_color, large_radius, small_radius, offset_ratio, step_size)
+
+    # restart sprio drawing
+    def restart(self):
+        for spiro in self.spiros:
+            spiro.restart()
+
+    def update(self):
+        # update all spiros
+        nComplete = 0
+        for spiro in self.spiros:
+            # update
+            spiro.update()
+            # count completed ones
+            if spiro.drawing_complete:
+                nComplete += 1
+        # if all spiros are complete, restart
+        if nComplete != len(self.spiros):
+            turtle.ontimer(self.update, self.deltaT)
+
+# TODO add countdown
+# TODO only draws two at a timer
+# TODO use multiple cores
+# note page 27
