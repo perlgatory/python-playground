@@ -48,4 +48,18 @@ class Spiro:
         for i in range(0, 360*self.rotations + 1, self.step_size):
             self.current_angle = math.radians(i)
             self._set_pos()
-            #self.turtle.hideturtle()
+        self.turtle.hideturtle()
+
+    def update(self):
+        #skip the rest of the steps if done
+        if self.drawing_complete:
+            return
+        #increment the angle
+        self.current_angle += math.radians(self.step_size)
+        #draw a step
+        self._set_pos()
+        #if drawing is complete, set flag
+        if self.current_angle >= math.pi*2*self.rotations:
+            self.drawing_complete = True
+            self.turtle.hideturtle()
+
