@@ -116,6 +116,8 @@ class SpiroAnimator:
             turtle.ontimer(self.update, self.deltaT)
 
 # TODO add countdown
-# TODO only draws two at a timer
+# TODO only draws two at a time
 # TODO use multiple cores
-# note page 27
+# TODO note page 27
+
+# Project consdidered complete as of 05/02/18
