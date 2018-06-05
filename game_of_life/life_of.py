@@ -9,7 +9,7 @@ OFF = 0
 
 # example
 def random_grid(N):
-    return np.random.choice([OFF, ON], N*N, p=[0.1, 0.9]).reshape(N, N)
+    return np.random.choice([OFF, ON], N*N, p=[0.9, 0.1]).reshape(N, N)
 
 
 def add_glider(i, j, grid):
@@ -26,8 +26,20 @@ def update(frame_num, img, grid, N):
     new_grid = grid.copy()
     for i in range(N):
         for j in range(N):
-            total = int()
-            # TODO rewrite code here, clean it up. PG49
+            count = 0
+            for x in [-1,0,1]:
+                for y in [-1,0,1]:
+                    if x == 0 and y == 0: continue #don't check our own square
+
+                    if grid[(i+x)%N, (j+y)%N] == ON:
+                        count += 1
+            if count == 3:
+                new_grid[i,j] = ON
+            elif count < 2 or count > 3:
+                new_grid[i,j] = OFF
+    img.set_data(new_grid)
+    grid[:] = new_grid[:]
+    return img,
 
 # main() function
 def main():
@@ -66,3 +78,11 @@ def main():
                                   frames=10,
                                   interval=update_interval,
                                   save_count=50)
+
+    if args.movfile:
+        ani.save(args.movfile, fps=60,  extra_args=['-vcodec',  'libx264'])
+
+    plt.show()
+
+if __name__ == '__main__':
+    main()
