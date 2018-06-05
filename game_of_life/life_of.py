@@ -9,7 +9,7 @@ OFF = 0
 
 # example
 def random_grid(N):
-    return np.random.choice([OFF, ON], N*N, p=[0.1, 0.9]).reshape(N, N)
+    return np.random.choice([OFF, ON], N*N, p=[0.9, 0.1]).reshape(N, N)
 
 
 def add_glider(i, j, grid):
