@@ -66,3 +66,11 @@ def main():
                                   frames=10,
                                   interval=update_interval,
                                   save_count=50)
+
+    if args.movfile:
+        ani.save(args.movfile, fps=60,  extra_args=['-vcodec',  'libx264'])
+
+    plt.show()
+
+if __name__ == '__main__':
+    main()
