@@ -26,8 +26,20 @@ def update(frame_num, img, grid, N):
     new_grid = grid.copy()
     for i in range(N):
         for j in range(N):
-            total = int()
-            # TODO rewrite code here, clean it up. PG49
+            count = 0
+            for x in [-1,0,1]:
+                for y in [-1,0,1]:
+                    if x == 0 and y == 0: continue #don't check our own square
+
+                    if grid[(i+x)%N, (j+y)%N] == ON:
+                        count += 1
+            if count == 3:
+                new_grid[i,j] = ON
+            elif count < 2 or count > 3:
+                new_grid[i,j] = OFF
+    img.set_data(new_grid)
+    grid[:] = new_grid[:]
+    return img,
 
 # main() function
 def main():
