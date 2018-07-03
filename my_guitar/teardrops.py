@@ -8,18 +8,10 @@ from matplotlib import pyplot as plt
 
 #TODO implement a guitar sound (Chapter 4, beginning page 55)
 #TODO start a band to accompany our script
-sampling_rate = 44100
-num_samples = sampling_rate * 5
-x = np.arange(num_samples)/float(sampling_rate)
-
-amplitude_values = np.sin(4.0*math.pi*220.0*x)
-amplitude_array = np.array(amplitude_values*32767, 'int16').tostring()
-with wave.open('sine220.wav', 'wb') as file:
-    file.setparams((1, 2, sampling_rate, num_samples, 'NONE', 'uncompressed'))
-    file.writeframes(amplitude_array)
 
 def generate_note(freq):
-    N = int(sampling_rate/freq)
+    num_samples = 44100
+    N = int(44100/freq)
     buf  = deque([random.random() -  0.5  for  i  in  range(N)])
     samples  = np.array([0]*num_samples, 'float32')
     for i in range(num_samples):
@@ -28,7 +20,80 @@ def generate_note(freq):
         buf.append(avg)
         buf.popleft()
 
-     samples  = np.array(samples*32767, 'int16')
-     return samples.tostring()
+    samples  = np.array(samples*32767, 'int16')
+    return samples.tostring()
 
-     ## todo finish this pg. 85
+def write_wave(file_name, data):
+    with wave.open(file_name, 'wb') as fh:
+        num_channels = 1
+        sample_width = 2
+        sampling_rate = 44100
+        num_samples = 44100
+        fh.setparams((num_channels, sample_width, sampling_rate, num_samples, 'NONE', 'noncompressed'))
+        fh.writeframes(data)
+
+class NotePlayer:
+    def __init__(self):
+        pygame.mixer.pre_init(44100, -16, 1, 2048)
+        pygame.init()
+        self.notes = {}
+
+    def add(self, file_name):
+        self.notes[file_name] = pygame.mixer.Sound(file_name)
+
+    def play(self, file_name):
+        try:
+            self.notes[file_name].play()
+        except:
+            print("{} not found!".format(file_name))
+
+    def play_random(self):
+        index = random.randint(0, len(self.notes)-1)
+        note = list(self.notes.values())[index]
+        note.play()
+
+def main():
+    parser = argparse.ArgumentParser(description="Generating sounds with Karplus String Algorithm")
+    parser.add_argument('--display', action='store_true', required=False)
+    parser.add_argument('--play', action='store_true', required=False)
+    parser.add_argument('--piano', action='store_true', required=False)
+    args = parser.parse_args()
+
+    if args.display:
+        g_show_plot = True
+        plt.ion()
+
+    note_player = NotePlayer()
+
+    #notes of a Pentatonic Minor scale
+    #piano C4-E(b)-F-G-B(b)-C5
+    notes = {'C4': 262, 'Eb': 311, 'F': 349, 'G': 391, 'Bb': 466}
+
+    for name, frequency in list(notes.items()):
+        file_name = "{}.wav".format(name)
+        if not os.path.exists(file_name) or args.display:
+            data = generate_note(frequency)
+            print("creating {} ..".format(file_name))
+            write_wave(file_name, data)
+        else:
+            print("{} already created. Skipping.".format(file_name))
+
+        note_player.add(file_name)
+
+        if args.display:
+            note_player.play(file_name)
+            time.sleep(0.5)
+
+    if args.play:
+        while True:
+            try:
+                note_player.play_random()
+                rest = np.random.choice([1, 2, 4, 8], 1, p=[0.15, 0.7, 0.1, 0.05])
+                time.sleep(0.25*rest[0])
+            except KeyboardInterrupt:
+                exit()
+
+if __name__ == '__main__':
+    main()
+
+#TODO implement the plotting (search for gShowPlot in the book, page 66(hardcopy)/89(pdf))
