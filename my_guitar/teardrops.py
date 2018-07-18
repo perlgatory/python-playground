@@ -6,20 +6,26 @@ import numpy as np
 from collections import deque
 from matplotlib import pyplot as plt
 
-#TODO implement a guitar sound (Chapter 4, beginning page 55)
 #TODO start a band to accompany our script
 
-def generate_note(freq):
+def generate_note(freq, g_show_plot):
     num_samples = 44100
     N = int(44100/freq)
     buf  = deque([random.random() -  0.5  for  i  in  range(N)])
+    if g_show_plot:
+    	axline, =plt.plot(buf)
     samples  = np.array([0]*num_samples, 'float32')
     for i in range(num_samples):
         samples[i] = buf[0]
         avg  =  0.996*0.5*(buf[0]  +  buf[1])
         buf.append(avg)
         buf.popleft()
-
+        # plot of flag set
+        if g_show_plot:
+        	if i % 1000 == 0:
+        		axline.set_ydata(buf)
+        		plt.draw()
+        		plt.pause(0.0001)
     samples  = np.array(samples*32767, 'int16')
     return samples.tostring()
 
@@ -62,6 +68,10 @@ def main():
     if args.display:
         g_show_plot = True
         plt.ion()
+        plt.show()
+        
+    else:
+    	g_show_plot = False
 
     note_player = NotePlayer()
 
@@ -72,7 +82,7 @@ def main():
     for name, frequency in list(notes.items()):
         file_name = "{}.wav".format(name)
         if not os.path.exists(file_name) or args.display:
-            data = generate_note(frequency)
+            data = generate_note(frequency, g_show_plot)
             print("creating {} ..".format(file_name))
             write_wave(file_name, data)
         else:
@@ -96,4 +106,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-#TODO implement the plotting (search for gShowPlot in the book, page 66(hardcopy)/89(pdf))
+#TODO implement function for --piano to create the piano guitar!
